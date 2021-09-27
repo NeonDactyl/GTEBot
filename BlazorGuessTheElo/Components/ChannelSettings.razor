@@ -1,0 +1,79 @@
+﻿@using Discord.WebSocket; 
+@using MatBlazor;
+@using BlazorGuessTheElo.Repositories.Interfaces;
+@using BlazorGuessTheElo.Services.Interfaces;
+@inject NavigationManager NavigationManager; 
+
+@inject IDiscordManagementService DiscordManagementService; 
+@inject IAllowedChannelsRepository AllowedChannelsRepository;
+@inject IDatabaseChangesService DatabaseChangesService;
+
+<div class="channel-settings">
+    <MatSlideToggle TValue="bool" Value="IsAllowedChannel" Label="Allow Bot On Channel" ValueChanged="ChannelAllowedToggle"></MatSlideToggle><br />
+    @if (IsAllowedChannel)
+    {
+        <MatSelect Label="Select a role for the channel" @bind-Value="CurrentRoleId">
+            @foreach (SocketRole role in Roles)
+            {
+                <MatOption TValue="ulong" Value="@role.Id">@role.Name</MatOption>
+            }
+        </MatSelect><br />
+        <MatButton OnClick="@OpenChannel">Open Channel</MatButton>
+        <MatButton OnClick="@CloseChannel">Close Channel</MatButton><br />
+        <MatButton OnClick="@NavigateToGames">Go To Games</MatButton>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public SocketTextChannel Channel { get; set; }
+    [Parameter]
+    public bool IsAllowedChannel { get; set; }
+    public List<SocketRole> Roles { get; set; }
+    private ulong CurrentRoleId;
+
+    protected override Task OnInitializedAsync()
+    {
+        this.Roles = Channel.Guild.Roles.ToList();
+        this.DatabaseChangesService.ChannelChanged += Refresh;
+        this.IsAllowedChannel = AllowedChannelsRepository.GetAllowedChannels().Contains(Channel.Id);
+        return Task.CompletedTask;
+    }
+
+    private void ChannelAllowedToggle(bool toggled)
+    {
+        IsAllowedChannel = toggled;
+        if (toggled)
+        {
+            AllowedChannelsRepository.AddAllowedChannel(Channel.Id);
+        }
+        else
+        {
+            AllowedChannelsRepository.RemoveAllowedChannel(Channel.Id);
+        }
+    }
+
+    private async Task OpenChannel(MouseEventArgs click)
+    {
+        Console.WriteLine(click);
+        Console.WriteLine("Opened");
+        await DiscordManagementService.OpenChannelToRole(Channel.Id, CurrentRoleId);
+    }
+
+    private async Task CloseChannel(MouseEventArgs click)
+    {
+        Console.WriteLine(click);
+        Console.WriteLine("Closed");
+        await DiscordManagementService.CloseChannelToRole(Channel.Id, CurrentRoleId);
+    }
+
+    private void NavigateToGames(MouseEventArgs click)
+    {
+        NavigationManager.NavigateTo($"Games/{Channel.Id}");
+    }
+
+    private void Refresh(ulong ChannelId)
+    {
+        this.IsAllowedChannel = AllowedChannelsRepository.GetAllowedChannels().Contains(Channel.Id);
+    }
+}

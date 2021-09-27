@@ -1,0 +1,63 @@
+﻿@page "/Dashboard/{GuildIdParam?}"
+@using BlazorGuessTheElo.Services.Interfaces
+@using BlazorGuessTheElo.Components
+@inject IDiscordManagementService DiscordManagementService
+@inject NavigationManager NavigationManager; 
+
+
+@code {
+    [Parameter]
+    public string GuildIdParam { get; set; }
+    public ulong? GuildId { get; set; }
+    public bool GuildPage { get; set; }
+    private bool Loading;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Loading = true;
+        await DiscordManagementService.InitializeAsync();
+        var guilds = await DiscordManagementService.RetrieveGuilds();
+        GuildPage = false;
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (UInt64.TryParse(GuildIdParam, out var gid))
+        {
+            GuildId = gid;
+            GuildPage = true;
+        }
+        else
+        {
+            GuildId = null;
+            GuildPage = false;
+        }
+        Loading = false;
+    }
+
+}
+
+<h3>GTEbot Dashboard</h3>
+
+<AuthorizeView>
+    <Authorized>
+
+        @if (!Loading)
+        {
+            if (!GuildPage)
+            {
+                <DashboardIndex Guilds="DiscordManagementService.GetGuilds()" />
+            }
+            else
+            {
+                var g = DiscordManagementService.GetGuilds().FirstOrDefault(x => x.Id == GuildId);
+                if (g is null || g.Id != GuildId) NavigationManager.NavigateTo("Dashboard");
+                <DashboardGuild discordManagementService="DiscordManagementService" Guild="g" />
+            }
+        }
+        else
+        {
+            <h1>Loading</h1>
+        }
+    </Authorized>
+</AuthorizeView>

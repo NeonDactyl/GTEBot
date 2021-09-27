@@ -1,0 +1,21 @@
+﻿@using BlazorGuessTheElo.Models; 
+@inject IMatDialogService MatDialogService; 
+
+<MatDialogTitle>
+    Random Game!
+</MatDialogTitle>
+<MatDialogContent>
+    <GameView Game="Game"></GameView>
+</MatDialogContent>
+@code {
+    [Parameter]
+    public EloSubmission Game { get; set; }
+
+    [CascadingParameter]
+    public MatDialogReference DialogReference { get; set; }
+
+    async Task CloseDialog()
+    {
+        DialogReference.Close(Game);
+    }
+}

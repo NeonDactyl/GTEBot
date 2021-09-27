@@ -1,0 +1,18 @@
+﻿@using BlazorGuessTheElo.Models;
+@inject IJSRuntime JSRuntime 
+
+<h3>Submitted by @Game.DiscordUserName</h3>
+<a href="@Game.GameUrl">Game Link</a><br />
+<span>@((int)((Game.Pgn.Split().Count() + 1) / 2)) Moves played</span><br />
+<MatInputTextComponent Disabled="true" Value="@Game.Pgn"></MatInputTextComponent>
+<button onclick="navigator.clipboard.writeText('@Game.Pgn')">Copy to Clipboard</button><br />
+Subscriber played @Game.Color
+@code {
+    [Parameter]
+    public EloSubmission Game { get; set; }
+
+    private async Task CopyTextToClipboard(MouseEventArgs e)
+    {
+        await JSRuntime.InvokeVoidAsync("clipboardCopy.copyText", Game.Pgn);
+    }
+}

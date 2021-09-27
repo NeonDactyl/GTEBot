@@ -1,0 +1,75 @@
+﻿body {
+}
+
+img {
+    border-radius: 50%;
+    width: 5em;
+    height: auto;
+}
+
+.guild-preview {
+    display: flex;
+    flex-flow: row-reverse;
+    height: 8em;
+    margin: 1em;
+    font-size: 0.75em;
+    max-width: 50%;
+    background-color: darkslategray;
+    color: white;
+    align-items: center;
+    padding: 0 1em;
+    flex-grow: 1;
+    border-radius: 2em;
+    animation: fadeInAnimation ease 1s;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+}
+
+@keyframes fadeInAnimation {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity:1;
+    }
+}
+
+.guild-name {
+    font-size: 2em;
+    width: 100%;
+    padding: 1em;
+}
+
+.guild-icon
+{
+    border-radius: 50%;
+    background-color: #000;
+    color: #ddd;
+    overflow: hidden;
+    font-size: 1.5em;
+    font-weight: 600;
+    min-width: 5em;
+}
+
+.guild-link, .guild-icon {
+    justify-content: center;
+    align-items: center;
+    color: #ddd;
+    display: flex;
+    max-height: 5em;
+    min-height: 5em;
+}
+
+.guild-link a {
+    text-decoration: none;
+    color: #ddd;
+    font-weight: 700;
+}
+
+.guild-link {
+    background-color: #404;
+    margin: 0 2em;
+    border-radius: 1em;
+    box-shadow: #000 0px 0px 3px;
+    min-width: 10em;
+}

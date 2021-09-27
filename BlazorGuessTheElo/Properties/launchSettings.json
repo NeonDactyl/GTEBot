@@ -1,0 +1,33 @@
+{
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:48758",
+      "sslPort": 44373
+    }
+  },
+  "profiles": {
+    "IIS Express": {
+      "commandName": "IISExpress",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "MYSQL_PASSWORD": "RkR6Bq^rmu6f!%9JZdvN",
+        "DBPORT": "3306",
+        "DBHOST": "192.168.1.171",
+        "MYSQL_USER": "eloBotUser",
+        "MYSQL_DATABASE": "elo",
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "BlazorGuessTheElo": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "dotnetRunMessages": "true",
+      "applicationUrl": "https://localhost:5001;http://localhost:5000"
+    }
+  }
+}

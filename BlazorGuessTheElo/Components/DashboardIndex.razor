@@ -1,0 +1,11 @@
+﻿@using Discord.Rest;
+
+@code {
+    [Parameter]
+    public List<RestUserGuild> Guilds { get; set; }
+}
+
+@foreach (var guild in Guilds)
+{
+    <GuildThumbnail Guild="@guild" />
+}

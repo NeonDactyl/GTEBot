@@ -1,0 +1,116 @@
+﻿@page "/Games/{ChannelIdParam?}"
+@using Discord.WebSocket;
+@using Microsoft.Extensions.Primitives; 
+@using Microsoft.AspNetCore.WebUtilities; 
+@using BlazorGuessTheElo.Components; 
+@using BlazorGuessTheElo.Services.Interfaces;
+@using BlazorGuessTheElo.Repositories.Interfaces;
+@using BlazorGuessTheElo.Models; 
+@inject DiscordSocketClient DiscordSocketClient;
+@inject IDiscordManagementService DiscordManagementService;
+@inject NavigationManager NavigationManager; 
+@inject IEloSubmissionRepository EloSubmissionRepository;
+@inject IMatDialogService MatDialogService; 
+@inject IDatabaseChangesService DatabaseChangesService 
+
+<h3>Games from <NavLink href="@($"Dashboard/{Channel.Guild.Id}")">@Channel.Guild.Name - @Channel.Name</NavLink></h3>
+<MatButton OnClick="@ToggleAllGames">@ToggleButtonDisplay</MatButton>
+
+@if (ShowSingleGame == true)
+{
+    <MatButton OnClick="@PickRandomGame">Pick new random game</MatButton>
+    <GameView Game="RandomGame"></GameView>
+}
+else
+{
+    <MatButton OnClick="@MarkAllInactive">Mark All Games As Inactive</MatButton>
+    <MatAccordion>
+        @foreach(var game in GameSubmissions)
+        {
+            <MatExpansionPanel>
+                <MatExpansionPanelSummary>
+                    <MatExpansionPanelHeader>
+                        Game from @game.DiscordUserName
+                    </MatExpansionPanelHeader>
+                </MatExpansionPanelSummary>
+                <MatExpansionPanelDetails>
+                    <GameView Game="game"></GameView>
+                </MatExpansionPanelDetails>
+            </MatExpansionPanel>
+        }
+    </MatAccordion>
+}
+@code {
+    [Parameter]
+    public string ChannelIdParam { get; set; }
+    public ulong? ChannelId;
+    public bool ChannelPage;
+    public List<EloSubmission> GameSubmissions;
+
+    private SocketGuildChannel Channel;
+    private EloSubmission RandomGame;
+    private bool ShowSingleGame;
+    private string ToggleButtonDisplay;
+
+    private readonly static string RandomGameButtonText = "Choose a random game";
+    private readonly static string SingleGameButtonText = "Show all games";
+
+    protected override async Task OnInitializedAsync()
+    {
+        ShowSingleGame = false;
+        ToggleButtonDisplay = RandomGameButtonText;
+        DatabaseChangesService.GamesMarkedInactiveAction += GamesMarkedInactive;
+    }
+
+    void ToggleAllGames()
+    {
+        ShowSingleGame = !ShowSingleGame;
+        if (ShowSingleGame)
+        {
+            PickRandomGame();
+        }
+        ToggleButtonDisplay = (ShowSingleGame ? SingleGameButtonText : RandomGameButtonText);
+    }
+
+    void MarkAllInactive()
+    {
+        EloSubmissionRepository.SetAllActiveToInactiveByChannelId(Channel.Id);
+    }
+
+    void GamesMarkedInactive(ulong channelId)
+    {
+        if (Channel.Id == channelId) GameSubmissions = EloSubmissionRepository.GetActiveEloSubmissionsByChannelId(channelId);
+        StateHasChanged();
+    }
+
+    void PickRandomGame()
+    {
+        var rand = new Random();
+        RandomGame = GameSubmissions[rand.Next(GameSubmissions.Count)];
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (UInt64.TryParse(ChannelIdParam, out var cid))
+        {
+            ChannelId = cid;
+            ChannelPage = true;
+        }
+        else
+        {
+            ChannelId = null;
+            ChannelPage = false;
+        }
+        if (ChannelPage)
+        {
+            var guilds = DiscordManagementService.GetGuilds();
+            var channels = DiscordSocketClient.Guilds.Where(x => guilds.Any(y => y.Id == x.Id)).SelectMany(guild => guild.Channels);
+            if (!channels.Any(c => c.Id == ChannelId)) NavigationManager.NavigateTo("Dashboard");
+            Channel = channels.First(x => x.Id == ChannelId);
+            GameSubmissions = EloSubmissionRepository.GetActiveEloSubmissionsByChannelId(ChannelId);
+        }
+
+
+    }
+
+}

@@ -1,0 +1,50 @@
+﻿@using Discord.Rest;
+@using Discord.WebSocket;
+@inject DiscordSocketClient DiscordSocketClient;
+<div class="guild-preview">
+    <div class="guild-icon">
+            @if (!String.IsNullOrWhiteSpace(Guild.IconUrl))
+            {
+                <img src="@Guild.IconUrl" />
+            }
+            else
+            {
+                @String.Join("", Guild.Name.Split().Select(x => x[0]).Take(3))
+            }
+    </div>
+        <div class="guild-link">
+    @if (DiscordSocketClient.Guilds.Select(x => x.Id).Contains(Guild.Id))
+    {
+            <a href="Dashboard/@Guild.Id.ToString()">Guild Dashboard</a>
+    }
+    else
+        {
+                <a target="_blank" href="https://discord.com/oauth2/authorize?client_id=875545057682419773&scope=bot&permissions=8&guild_id=@Guild.Id">Set up guild</a>
+        }
+        </div>
+    <div class="guild-name">
+        @Guild.Name
+    </div>
+</div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        DiscordSocketClient.JoinedGuild += Refresh;
+        DiscordSocketClient.LeftGuild += Refresh;
+    }
+    [Parameter]
+    public RestUserGuild Guild { get; set; }
+
+    private Task Refresh(SocketGuild guild)
+    {
+        if (Guild.Id == guild.Id)
+        {
+            return InvokeAsync(() =>
+            {
+                StateHasChanged();
+            });
+        }
+        else return Task.CompletedTask;
+    }
+}

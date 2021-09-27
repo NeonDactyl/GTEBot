@@ -1,0 +1,49 @@
+﻿@using MatBlazor;
+@using Discord.Rest;
+@using Discord.WebSocket;
+@using BlazorGuessTheElo.Services.Interfaces;
+@using BlazorGuessTheElo.Repositories.Interfaces;
+
+@inject IAllowedChannelsRepository AllowedChannelsRepository;
+
+<h4>@Guild.Name</h4>
+    @if (Loading)
+    {
+        <h3>Loading</h3>
+    }
+    else
+    {
+        <MatAccordion>
+        @foreach (var channel in Channels)
+        {
+                <MatExpansionPanel>
+                    <MatExpansionPanelSummary>
+                        <MatExpansionPanelHeader>@channel.Name</MatExpansionPanelHeader>
+                    </MatExpansionPanelSummary>
+                    <MatExpansionPanelDetails>
+                        <ChannelSettings Channel="channel" IsAllowedChannel="AllowedChannels.Contains(channel.Id)"></ChannelSettings>
+                    </MatExpansionPanelDetails>
+                </MatExpansionPanel>
+        }
+        </MatAccordion>
+    }
+
+@code {
+    [Parameter]
+    public RestUserGuild Guild { get; set; }
+    [Parameter]
+    public IDiscordManagementService discordManagementService { get; set; }
+    private List<ulong> AllowedChannels;
+
+    public List<SocketTextChannel> Channels { get; set; }
+
+    public bool Loading { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Loading = true;
+        Channels = discordManagementService.GetChannelsByGuild(Guild.Id);
+        AllowedChannels = AllowedChannelsRepository.GetAllowedChannels();
+        Loading = false;
+    }
+}
