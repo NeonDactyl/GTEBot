@@ -20,6 +20,13 @@ namespace BlazorGuessTheEloDiscord.OAuth2
             TokenEndpoint = DiscordDefaults.TokenEndpoint;
             UserInformationEndpoint = DiscordDefaults.UserInformationEndpoint;
             UserGuildsEndpoint = DiscordDefaults.UserGuildsEndpoint;
+            CorrelationCookie = new Microsoft.AspNetCore.Http.CookieBuilder
+            {
+                HttpOnly = false,
+                SameSite = Microsoft.AspNetCore.Http.SameSiteMode.None,
+                SecurePolicy = Microsoft.AspNetCore.Http.CookieSecurePolicy.Always,
+                Expiration = TimeSpan.FromMinutes(10)
+            };  
             Scope.Add("identify");
             Scope.Add("guilds");
 

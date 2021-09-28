@@ -1,5 +1,6 @@
 using BlazorGuessTheElo.Data;
 using BlazorGuessTheElo.DataContext;
+using BlazorGuessTheElo.Providers;
 using BlazorGuessTheElo.Repositories;
 using BlazorGuessTheElo.Repositories.Interfaces;
 using BlazorGuessTheElo.Services;
@@ -13,6 +14,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Routing;
@@ -79,11 +81,19 @@ namespace BlazorGuessTheElo
                 opt.DefaultChallengeScheme = DiscordDefaults.AuthenticationScheme;
             })
                 .AddCookie()
-                .AddDiscord(x =>
+                .AddDiscord(options =>
                 {
-                    x.AppId = Configuration.GetValue<string>("Discord:ClientId");
-                    x.AppSecret = Configuration.GetValue<string>("Discord:ClientSecret");
-                    x.SaveTokens = true;
+                    options.AppId = Configuration.GetValue<string>("Discord:ClientId");
+                    options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    options.AppSecret = Configuration.GetValue<string>("Discord:ClientSecret");
+                    options.SaveTokens = true;
+                    options.CorrelationCookie = new Microsoft.AspNetCore.Http.CookieBuilder
+                    {
+                        HttpOnly = false,
+                        SameSite = Microsoft.AspNetCore.Http.SameSiteMode.None,
+                        SecurePolicy = Microsoft.AspNetCore.Http.CookieSecurePolicy.Always,
+                        Expiration = TimeSpan.FromMinutes(10)
+                    };
                 });
             services.Configure<ForwardedHeadersOptions>(options =>
             {
@@ -96,12 +106,14 @@ namespace BlazorGuessTheElo
                 options.UseMySql(connString, version).EnableDetailedErrors().EnableSensitiveDataLogging();
             }, ServiceLifetime.Singleton);
             services.AddHttpContextAccessor();
+            services.AddHttpClient();
 
             //Scoped
             services.AddScoped<IDiscordManagementService, DiscordManagementService>();
             services.AddScoped<DiscordRestClient>();
             services.AddScoped<IEloSubmissionRepository, EloSubmissionRepository>();
             services.AddScoped<IAllowedChannelsRepository, AllowedChannelsRepository>();
+            services.AddScoped<TokenProvider>();
 
             //Singleton
             services.AddSingleton<DiscordSocketClient>();
@@ -118,20 +130,20 @@ namespace BlazorGuessTheElo
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.UseStatusCodePagesWithReExecute();
-
             // required in order to get https for OpenIdConnect
             // must come before app.UseAuthentication();
             var forwardedHeaderOptions = new ForwardedHeadersOptions
             {
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
             };
+
             forwardedHeaderOptions.KnownNetworks.Clear();
             forwardedHeaderOptions.KnownProxies.Clear();
             app.UseForwardedHeaders(forwardedHeaderOptions);
-            app.UseForwardedHeaders(new ForwardedHeadersOptions
+
+            app.UseCookiePolicy(new CookiePolicyOptions()
             {
-                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+                MinimumSameSitePolicy = SameSiteMode.None
             });
 
             if (env.IsDevelopment())

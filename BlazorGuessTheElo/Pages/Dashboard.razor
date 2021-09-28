@@ -8,6 +8,8 @@
 @code {
     [Parameter]
     public string GuildIdParam { get; set; }
+    [Parameter]
+    public string AccessToken { get; set; }
     public ulong? GuildId { get; set; }
     public bool GuildPage { get; set; }
     private bool Loading;
@@ -15,6 +17,7 @@
     protected override async Task OnInitializedAsync()
     {
         Loading = true;
+
         await DiscordManagementService.InitializeAsync();
         var guilds = await DiscordManagementService.RetrieveGuilds();
         GuildPage = false;

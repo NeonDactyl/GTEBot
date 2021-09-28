@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Discord.WebSocket;
+using BlazorGuessTheElo.Providers;
 
 namespace BlazorGuessTheElo.Services
 {
@@ -15,21 +16,21 @@ namespace BlazorGuessTheElo.Services
     {
         private readonly DiscordRestClient discordRestClient;
         private readonly DiscordSocketClient discordSocketClient;
-        private readonly HttpContext context;
+        private readonly TokenProvider tokenProvider;
         private string userToken;
 
         public List<RestUserGuild> Guilds;
 
-        public DiscordManagementService(DiscordRestClient client, IHttpContextAccessor contextAccessor, DiscordSocketClient discordSocketClient)
+        public DiscordManagementService(DiscordRestClient client, TokenProvider tokenProvider, DiscordSocketClient discordSocketClient)
         {
             this.discordRestClient = client;
             this.discordSocketClient = discordSocketClient;
-            this.context = contextAccessor.HttpContext;
+            this.tokenProvider = tokenProvider;
         }
 
         public async Task InitializeAsync()
         {
-            userToken = await context.GetTokenAsync("access_token");
+            userToken = tokenProvider.AccessToken;
             try
             {
                 if (discordRestClient.LoginState == LoginState.LoggedOut)
