@@ -57,6 +57,7 @@ namespace BlazorGuessTheElo.Services
 
         public void AllowOnChannel(ulong channelId)
         {
+            Console.WriteLine($"Allowing view access to channel {channelId}");
             var g = socketClient.Guilds.FirstOrDefault(x => x.Channels.Select(y => y.Id).Contains(channelId));
             var c = g.Channels.FirstOrDefault(x => x.Id == channelId);
             c.AddPermissionOverwriteAsync(socketClient.CurrentUser, new OverwritePermissions(viewChannel: PermValue.Allow));
@@ -64,6 +65,7 @@ namespace BlazorGuessTheElo.Services
 
         public void DenyOnChannel(ulong channelId)
         {
+            Console.WriteLine($"Denying view access to channel {channelId}");
             var g = socketClient.Guilds.FirstOrDefault(x => x.Channels.Select(y => y.Id).Contains(channelId));
             var c = g.Channels.FirstOrDefault(x => x.Id == channelId);
             c.AddPermissionOverwriteAsync(socketClient.CurrentUser, new OverwritePermissions(viewChannel: PermValue.Deny));
