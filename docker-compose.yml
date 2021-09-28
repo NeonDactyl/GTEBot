@@ -23,7 +23,7 @@ services:
     environment: 
       MYSQL_ROOT_PASSWORD: "uDvJV^HQw8&Qy9D9SXN"
       MYSQL_USER: "elosubmissionuser"
-      MYSQL_PASSWORD: "i2Un2p%4ogxF%uCU5bM"
+      MYSQL_PASSWORD: ""
       MYSQL_DATABASE: "elosubmissionDatabase"
   #Api  Service
   api:
@@ -42,6 +42,6 @@ services:
     environment: 
       - DBHOST=database
       - MYSQL_USER=elosubmissionuser
-      - MYSQL_PASSWORD=i2Un2p%4ogxF%uCU5bM
+      - MYSQL_PASSWORD=
       - MYSQL_DATABASE=elosubmissionDatabase
       - ASPNETCORE_ENVIRONMENT=Production

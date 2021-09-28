@@ -44,6 +44,10 @@ namespace BlazorGuessTheElo.Services
         public async Task GuildJoined(SocketGuild guild)
         {
             GuildChanged?.Invoke(guild.Id);
+            foreach (SocketTextChannel channel in guild.TextChannels)
+            {
+                await channel.AddPermissionOverwriteAsync(socketClient.CurrentUser, new OverwritePermissions(viewChannel: PermValue.Deny));
+            }
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)
