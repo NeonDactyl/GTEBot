@@ -34,7 +34,7 @@ namespace BlazorGuessTheElo.Services
             this.serviceProvider = serviceProvider;
             this.configuration = configuration;
             this.databaseChangesService = databaseChangesService;
-            this.databaseChangesService.ChannelChanged += Refresh;
+            this.databaseChangesService.ChannelChangedAdded += Refresh;
             using (var scope = serviceScopeFactory.CreateScope())
             {
                 this.eloSubmissionService = scope.ServiceProvider.GetService<IEloSubmissionService>();
@@ -61,7 +61,7 @@ namespace BlazorGuessTheElo.Services
             var a = Assembly.GetEntryAssembly();
             await commandService.AddModulesAsync(a, serviceProvider);
             this.discordSocketClient.MessageReceived += MessageReceivedAsync;
-            this.databaseChangesService.ChannelChanged += Refresh;
+            this.databaseChangesService.ChannelChangedAdded += Refresh;
         }
 
         public void Refresh(ulong channelId)

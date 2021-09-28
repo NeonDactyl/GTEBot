@@ -8,7 +8,8 @@ namespace BlazorGuessTheElo.Services
 {
     public class DatabaseChangesService : IDatabaseChangesService
     {
-        public event Action<ulong> ChannelChanged;
+        public event Action<ulong> ChannelChangedAdded;
+        public event Action<ulong> ChannelChangedRemoved;
         public event Action<ulong> GameAddedAction;
         public event Action<ulong> GamesMarkedInactiveAction;
 
@@ -22,9 +23,13 @@ namespace BlazorGuessTheElo.Services
             GamesMarkedInactiveAction?.Invoke(channelId);
         }
 
-        public void RefreshChannel(ulong channelId)
+        public void RefreshChannelAdded(ulong channelId)
         {
-            ChannelChanged?.Invoke(channelId);
+            ChannelChangedAdded?.Invoke(channelId);
+        }
+        public void RefreshChannelRemoved(ulong channelId)
+        {
+            ChannelChangedAdded?.Invoke(channelId);
         }
     }
 }

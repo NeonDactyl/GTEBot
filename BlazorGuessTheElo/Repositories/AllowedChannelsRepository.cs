@@ -16,13 +16,11 @@ namespace BlazorGuessTheElo.Repositories
     {
         private EloSubmissionDatabaseContext databaseContext;
         private IDatabaseChangesService databaseChangesService;
-        private EloBotService botService;
-        public AllowedChannelsRepository(EloSubmissionDatabaseContext databaseContext, IDatabaseChangesService databaseChangesService, EloBotService botService)
+        public AllowedChannelsRepository(EloSubmissionDatabaseContext databaseContext, IDatabaseChangesService databaseChangesService)
         {
 
             this.databaseContext = databaseContext;
             this.databaseChangesService = databaseChangesService;
-            this.botService = botService;
             //this.databaseContext = serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<EloSubmissionDatabaseContext>();
             //this.databaseContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         }
@@ -42,8 +40,7 @@ namespace BlazorGuessTheElo.Repositories
                 databaseContext.Update(channel);
             }
             databaseContext.SaveChanges();
-            botService.AllowOnChannel(channelId);
-            databaseChangesService.RefreshChannel(channelId);
+            databaseChangesService.RefreshChannelAdded(channelId);
         }
 
 
@@ -59,7 +56,7 @@ namespace BlazorGuessTheElo.Repositories
             channel.Allowed = false;
             databaseContext.AllowedChannels.Update(channel);
             databaseContext.SaveChanges();
-            databaseChangesService.RefreshChannel(channelId);
+            databaseChangesService.RefreshChannelRemoved(channelId);
         }
     }
 }

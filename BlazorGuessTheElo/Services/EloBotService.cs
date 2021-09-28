@@ -16,15 +16,19 @@ namespace BlazorGuessTheElo.Services
         DiscordSocketClient socketClient;
         IConfiguration configuration;
         ICommandHandlingService commandHandlingService;
+        private IDatabaseChangesService databaseChangesService;
         string token;
         public event Action<ulong> GuildChanged;
 
-        public EloBotService(IConfiguration config, DiscordSocketClient client, ICommandHandlingService commandHandlingService)
+        public EloBotService(IConfiguration config, DiscordSocketClient client, ICommandHandlingService commandHandlingService, IDatabaseChangesService databaseChangesService)
         {
             configuration = config;
             this.socketClient = client;
             token = configuration.GetValue<string>("Discord:Token");
             this.commandHandlingService = commandHandlingService;
+            this.databaseChangesService = databaseChangesService;
+            this.databaseChangesService.ChannelChangedAdded += AllowOnChannel;
+            this.databaseChangesService.ChannelChangedRemoved += DenyOnChannel;
         }
 
         public void Dispose()
@@ -51,11 +55,18 @@ namespace BlazorGuessTheElo.Services
             }
         }
 
-        public async Task AllowOnChannel(ulong channelId)
+        public void AllowOnChannel(ulong channelId)
         {
             var g = socketClient.Guilds.FirstOrDefault(x => x.Channels.Select(y => y.Id).Contains(channelId));
             var c = g.Channels.FirstOrDefault(x => x.Id == channelId);
-            await c.AddPermissionOverwriteAsync(socketClient.CurrentUser, new OverwritePermissions(viewChannel: PermValue.Allow));
+            c.AddPermissionOverwriteAsync(socketClient.CurrentUser, new OverwritePermissions(viewChannel: PermValue.Allow));
+        }
+
+        public void DenyOnChannel(ulong channelId)
+        {
+            var g = socketClient.Guilds.FirstOrDefault(x => x.Channels.Select(y => y.Id).Contains(channelId));
+            var c = g.Channels.FirstOrDefault(x => x.Id == channelId);
+            c.AddPermissionOverwriteAsync(socketClient.CurrentUser, new OverwritePermissions(viewChannel: PermValue.Deny));
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)

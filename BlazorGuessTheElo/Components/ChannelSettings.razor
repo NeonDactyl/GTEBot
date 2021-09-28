@@ -35,7 +35,7 @@
     protected override Task OnInitializedAsync()
     {
         this.Roles = Channel.Guild.Roles.ToList();
-        this.DatabaseChangesService.ChannelChanged += Refresh;
+        this.DatabaseChangesService.ChannelChangedAdded += Refresh;
         this.IsAllowedChannel = AllowedChannelsRepository.GetAllowedChannels().Contains(Channel.Id);
         return Task.CompletedTask;
     }
