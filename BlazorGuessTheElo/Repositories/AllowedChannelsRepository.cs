@@ -1,6 +1,7 @@
 ﻿using BlazorGuessTheElo.DataContext;
 using BlazorGuessTheElo.Models;
 using BlazorGuessTheElo.Repositories.Interfaces;
+using BlazorGuessTheElo.Services;
 using BlazorGuessTheElo.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,11 +16,13 @@ namespace BlazorGuessTheElo.Repositories
     {
         private EloSubmissionDatabaseContext databaseContext;
         private IDatabaseChangesService databaseChangesService;
-        public AllowedChannelsRepository(EloSubmissionDatabaseContext databaseContext, IDatabaseChangesService databaseChangesService)
+        private EloBotService botService;
+        public AllowedChannelsRepository(EloSubmissionDatabaseContext databaseContext, IDatabaseChangesService databaseChangesService, EloBotService botService)
         {
 
             this.databaseContext = databaseContext;
             this.databaseChangesService = databaseChangesService;
+            this.botService = botService;
             //this.databaseContext = serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<EloSubmissionDatabaseContext>();
             //this.databaseContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         }
@@ -39,6 +42,7 @@ namespace BlazorGuessTheElo.Repositories
                 databaseContext.Update(channel);
             }
             databaseContext.SaveChanges();
+            botService.AllowOnChannel(channelId);
             databaseChangesService.RefreshChannel(channelId);
         }
 

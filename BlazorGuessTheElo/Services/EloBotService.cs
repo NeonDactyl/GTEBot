@@ -37,6 +37,7 @@ namespace BlazorGuessTheElo.Services
             socketClient.Log += LogAsync;
             await socketClient.LoginAsync(TokenType.Bot, token);
             await socketClient.StartAsync();
+            await socketClient.SetStatusAsync(UserStatus.Offline);
             await commandHandlingService.InitializeAsync();
             socketClient.JoinedGuild += GuildJoined;
         }
@@ -48,6 +49,13 @@ namespace BlazorGuessTheElo.Services
             {
                 await channel.AddPermissionOverwriteAsync(socketClient.CurrentUser, new OverwritePermissions(viewChannel: PermValue.Deny));
             }
+        }
+
+        public async Task AllowOnChannel(ulong channelId)
+        {
+            var g = socketClient.Guilds.FirstOrDefault(x => x.Channels.Select(y => y.Id).Contains(channelId));
+            var c = g.Channels.FirstOrDefault(x => x.Id == channelId);
+            await c.AddPermissionOverwriteAsync(socketClient.CurrentUser, new OverwritePermissions(viewChannel: PermValue.Allow));
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)
