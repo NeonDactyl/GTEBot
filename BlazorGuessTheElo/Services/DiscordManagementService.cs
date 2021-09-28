@@ -53,7 +53,7 @@ namespace BlazorGuessTheElo.Services
             var guild = discordSocketClient.Guilds.First(x => x.Channels.Select(y => y.Id).ToList().Contains(channelId));
             var chan = guild.Channels.First(x => x.Id == channelId);
             var role = guild.Roles.First(x => x.Id == roleId);
-            await chan.AddPermissionOverwriteAsync(role, new OverwritePermissions(sendMessages: PermValue.Deny));
+            await chan.AddPermissionOverwriteAsync(role, new OverwritePermissions(sendMessages: PermValue.Deny, viewChannel: PermValue.Allow));
             //var guild = discordRestClient.GetGuildsAsync().Result
             //        .First(g =>
             //            g.GetChannelsAsync().Result.Any(c => c.Id == channelId));
