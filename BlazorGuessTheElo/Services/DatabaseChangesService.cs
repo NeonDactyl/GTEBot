@@ -31,7 +31,7 @@ namespace BlazorGuessTheElo.Services
         public void RefreshChannelRemoved(ulong channelId)
         {
             Console.WriteLine("Invokeing RefreshChannelRemoved");
-            ChannelChangedAdded?.Invoke(channelId);
+            ChannelChangedRemoved?.Invoke(channelId);
         }
     }
 }
