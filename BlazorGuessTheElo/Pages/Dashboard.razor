@@ -1,8 +1,10 @@
 ﻿@page "/Dashboard/{GuildIdParam?}"
 @using BlazorGuessTheElo.Services.Interfaces
 @using BlazorGuessTheElo.Components
+@using BlazorGuessTheElo.Providers 
 @inject IDiscordManagementService DiscordManagementService
-@inject NavigationManager NavigationManager; 
+@inject NavigationManager NavigationManager;
+@inject TokenProvider TokenProvider;
 
 
 @code {

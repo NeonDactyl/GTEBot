@@ -2,17 +2,20 @@
 @inject TokenProvider TokenProvider;
 
 @code {
-    [Parameter]
-    public InitialApplicationState InitialState { get; set; }
+        [Parameter]
+        public InitialApplicationState InitialState { get; set; }
 
     protected override Task OnInitializedAsync()
     {
-        TokenProvider.AccessToken = InitialState.AccessToken;
-        TokenProvider.RefreshToken = InitialState.RefreshToken;
+        if (!(InitialState == null))
+        {
+            TokenProvider.AccessToken = InitialState.AccessToken;
+            TokenProvider.RefreshToken = InitialState.RefreshToken;
+        }
 
         return base.OnInitializedAsync();
     }
-} 
+}
 
 <Router AppAssembly="@typeof(Program).Assembly" PreferExactMatches="@true">
     <Found Context="routeData">

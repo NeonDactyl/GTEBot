@@ -44,4 +44,4 @@ services:
       - MYSQL_USER=elosubmissionuser
       - MYSQL_PASSWORD=i2Un2p%4ogxF%uCU5bM
       - MYSQL_DATABASE=elosubmissionDatabase
-      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_ENVIRONMENT=Production

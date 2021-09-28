@@ -4,11 +4,24 @@
 @namespace BlazorGuessTheElo.Pages 
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
-    var tokens = new InitialApplicationState
+    InitialApplicationState tokens;
+    Console.WriteLine(HttpContext);
+    if (User.Identity.IsAuthenticated)
     {
-        AccessToken = await HttpContext.GetTokenAsync("access_token"),
-        RefreshToken = await HttpContext.GetTokenAsync("refresh_token")
-    };
+        tokens = new InitialApplicationState
+        {
+            AccessToken = await HttpContext.GetTokenAsync("access_token"),
+            RefreshToken = await HttpContext.GetTokenAsync("refresh_token")
+        };
+    }
+    else
+    {
+        tokens = new InitialApplicationState
+        {
+            AccessToken = String.Empty,
+            RefreshToken = String.Empty
+        };
+    }
 }
 
 <!DOCTYPE html>
@@ -29,7 +42,8 @@
     <script src="_content/MatBlazor/dist/matBlazor.js"></script>
 </head>
 <body>
-    <component type="typeof(App)" param-InitialState="tokens" render-mode="ServerPrerendered" />
+    <component type="typeof(App)" param-InitialState="tokens"
+               render-mode="ServerPrerendered" />
 
     <div id="blazor-error-ui">
         <environment include="Staging,Production">
