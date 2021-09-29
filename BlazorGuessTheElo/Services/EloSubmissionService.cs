@@ -19,12 +19,12 @@ namespace BlazorGuessTheElo.Services
         public bool HandleSubmission(ref EloSubmission eloSubmission)
         {
 
-            if (eloSubmissionRepository.UserHasEntriesInLastMinute(eloSubmission.SourceDiscordUserId))
-            {
-                eloSubmission.IsValid = false;
-                eloSubmission.ErrorMessage = "There's already a game submitted recently from this account.";
-                return false;
-            }
+            //if (eloSubmissionRepository.UserHasEntriesInLastMinute(eloSubmission.SourceDiscordUserId))
+            //{
+            //    eloSubmission.IsValid = false;
+            //    eloSubmission.ErrorMessage = "There's already a game submitted recently from this account.";
+            //    return false;
+            //}
             eloSubmissionRepository.AddEntry(eloSubmission);
             return true;
         }
