@@ -24,15 +24,23 @@ namespace BlazorGuessTheElo.Services
         private readonly IEloSubmissionService eloSubmissionService;
         private readonly IAllowedChannelsRepository allowedChannelsRepository;
         private readonly IDatabaseChangesService databaseChangesService;
+        private readonly IMessageDeletionService messageDeletionService;
         List<ulong> ChannelIds;
         private readonly char CommandPrefix;
 
-        public CommandHandlingService(CommandService commandService, DiscordSocketClient discordSocketClient, IServiceProvider serviceProvider, IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, IDatabaseChangesService databaseChangesService)
+        public CommandHandlingService(CommandService commandService,
+            DiscordSocketClient discordSocketClient,
+            IServiceProvider serviceProvider,
+            IConfiguration configuration,
+            IServiceScopeFactory serviceScopeFactory,
+            IDatabaseChangesService databaseChangesService,
+            IMessageDeletionService messageDeletionService)
         {
             this.commandService = commandService;
             this.discordSocketClient = discordSocketClient;
             this.serviceProvider = serviceProvider;
             this.configuration = configuration;
+            this.messageDeletionService = messageDeletionService;
             this.databaseChangesService = databaseChangesService;
             this.databaseChangesService.ChannelChangedAdded += Refresh;
             using (var scope = serviceScopeFactory.CreateScope())
@@ -69,13 +77,15 @@ namespace BlazorGuessTheElo.Services
             ChannelIds = allowedChannelsRepository.GetAllowedChannels();
         }
 
-        public async Task MessageReceivedAsync(SocketMessage rawMessage)
+        public Task MessageReceivedAsync(SocketMessage rawMessage)
         {
-            if (!(rawMessage is SocketUserMessage message)) return;
-            if (!ChannelIds.Contains(message.Channel.Id)) return;
-            if (message.Source != MessageSource.User) return;
+            var start = DateTime.Now;
+            if (!(rawMessage is SocketUserMessage message)) return Task.CompletedTask;
+            if (!ChannelIds.Contains(message.Channel.Id)) return Task.CompletedTask;
+            if (message.Source != MessageSource.User) return Task.CompletedTask;
 
             EloSubmission eloSubmission = EloSubmissionParser.Parse(message.Content);
+            Console.WriteLine($"MessageReceivedAsync: Parsed in ${(DateTime.Now - start).TotalMilliseconds} ms");
             if (eloSubmission.IsValid)
             {
                 eloSubmission.SourceDiscordUserId = message.Author.Id;
@@ -84,26 +94,20 @@ namespace BlazorGuessTheElo.Services
                 eloSubmission.IsActive = true;
                 eloSubmission.SubmissionTime = DateTime.Now;
                 if (eloSubmissionService.HandleSubmission(ref eloSubmission))
-                    await rawMessage.Author.SendMessageAsync($"Your submission for Guess The Elo has been recorded.\nGame link: {eloSubmission.GameUrl}");
+                    rawMessage.Author.SendMessageAsync($"Your submission for Guess The Elo has been recorded.\nGame link: <{eloSubmission.GameUrl}>");
                 else
-                    await rawMessage.Author.SendMessageAsync($"Your submission was not recorded: \n\n{eloSubmission.ErrorMessage}\n\n {string.Join("\n> ", message.Content.Split('\n'))}");
-                await rawMessage.DeleteAsync();
-                return;
+                    rawMessage.Author.SendMessageAsync($"Your submission was not recorded: \n\n{eloSubmission.ErrorMessage}\n\n {string.Join("\n> ", message.Content.Split('\n'))}");
+                messageDeletionService.DeleteMessage(message);
+                Console.WriteLine($"MessageReceivedAsync: Valid Parse: Returned in ${(DateTime.Now - start).TotalMilliseconds} ms");
+                return Task.CompletedTask;
             }
             else
             {
-                await message.Author.SendMessageAsync($"Your submission was not recorded:\n\n{eloSubmission.ErrorMessage}\n\n> {string.Join("\n> ", message.Content.Split('\n'))}");
-                await rawMessage.DeleteAsync();
-                return;
+                message.Author.SendMessageAsync($"Your submission was not recorded:\n\n{eloSubmission.ErrorMessage}\n\n> {string.Join("\n> ", message.Content.Split('\n'))}");
+                messageDeletionService.DeleteMessage(message);
+                Console.WriteLine($"MessageReceivedAsync: Invalid Parse: Returned in ${(DateTime.Now - start).TotalMilliseconds} ms");
+                return Task.CompletedTask;
             }
-
-            int argPos = 0;
-
-            if (!message.HasCharPrefix(CommandPrefix, ref argPos)) return;
-
-            var context = new SocketCommandContext(discordSocketClient, message);
-
-            await commandService.ExecuteAsync(context, argPos, serviceProvider);
         }
     }
 }

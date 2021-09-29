@@ -46,6 +46,14 @@ namespace BlazorGuessTheElo.Services
             socketClient.JoinedGuild += GuildJoined;
         }
 
+        public async Task SetSlowMode(int seconds, ulong channelId)
+        {
+            var c = socketClient.Guilds.FirstOrDefault(x => x.TextChannels.Any(y => y.Id == channelId)).TextChannels.FirstOrDefault(x => x.Id == channelId);
+            await c.ModifyAsync(x =>
+            {
+                x.SlowModeInterval = seconds;
+            });
+        }
         public async Task GuildJoined(SocketGuild guild)
         {
             GuildChanged?.Invoke(guild.Id);

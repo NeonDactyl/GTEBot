@@ -11,6 +11,7 @@ namespace BlazorGuessTheElo.Repositories.Interfaces
         public void SetAllActiveToInactiveByChannelId(ulong channelId);
         public List<EloSubmission> GetActiveEloSubmissionsByChannelId(ulong? channelId);
         public void AddEntry(EloSubmission submission);
+        public void AddEntries(IList<EloSubmission> submissions);
         public bool UserHasEntriesInLastMinute(ulong discordUserId);
     }
 }

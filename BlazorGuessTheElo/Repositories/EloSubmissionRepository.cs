@@ -46,5 +46,12 @@ namespace BlazorGuessTheElo.Repositories
         {
             return databaseContext.EloSubmissions.AsQueryable().Any(submission => submission.SourceDiscordUserId == discordUserId && submission.SubmissionTime > DateTime.Now.AddMinutes(-1));
         }
+
+        public void AddEntries(IList<EloSubmission> submissions)
+        {
+            if (submissions.Count() == 0) return;
+            databaseContext.EloSubmissions.AddRange(submissions);
+            databaseContext.SaveChanges();
+        }
     }
 }

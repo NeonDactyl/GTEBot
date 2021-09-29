@@ -121,6 +121,7 @@ namespace BlazorGuessTheElo
             services.AddSingleton<ICommandHandlingService, CommandHandlingService>();
             services.AddSingleton<IEloSubmissionService, EloSubmissionService>();
             services.AddSingleton<IDatabaseChangesService, DatabaseChangesService>();
+            services.AddSingleton<IMessageDeletionService, MessageDeletionService>();
 
             //HostedService
             services.AddMatBlazor();

@@ -85,6 +85,12 @@ namespace BlazorGuessTheElo.Parser
             }
 
             string pgn = string.Join(' ', moves).Trim();
+            if (string.IsNullOrWhiteSpace(pgn))
+            {
+                eloSubmission.ErrorMessage = "No valid PGN could be found.";
+                eloSubmission.IsValid = false;
+                return eloSubmission;
+            }
 
             var reader = new PgnParser();
             try
