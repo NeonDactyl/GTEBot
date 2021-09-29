@@ -14,16 +14,16 @@
 @inject IDatabaseChangesService DatabaseChangesService 
 
 <h3>Games from <NavLink href="@($"Dashboard/{Channel.Guild.Id}")">@Channel.Guild.Name - @Channel.Name</NavLink></h3>
-<MatButton OnClick="@ToggleAllGames">@ToggleButtonDisplay</MatButton>
+<MatButton Raised="true" OnClick="@ToggleAllGames">@ToggleButtonDisplay</MatButton>
 
 @if (ShowSingleGame == true)
 {
-    <MatButton OnClick="@PickRandomGame">Pick new random game</MatButton>
+    <MatButton Raised="true" OnClick="@PickRandomGame">Pick new random game</MatButton>
     <GameView Game="RandomGame"></GameView>
 }
 else
 {
-    <MatButton OnClick="@MarkAllInactive">Mark All Games As Inactive</MatButton>
+    <MatButton Raised="true" OnClick="@MarkAllInactive">Mark All Games As Old</MatButton>
     <MatAccordion>
         @foreach(var game in GameSubmissions)
         {

@@ -15,11 +15,11 @@
         <div class="guild-link">
     @if (DiscordSocketClient.Guilds.Select(x => x.Id).Contains(Guild.Id))
     {
-            <a href="Dashboard/@Guild.Id.ToString()">Guild Dashboard</a>
+            <a href="Dashboard/@Guild.Id.ToString()">Server Dashboard</a>
     }
     else
         {
-                <a target="_blank" href="https://discord.com/oauth2/authorize?client_id=875545057682419773&scope=bot&permissions=8&guild_id=@Guild.Id">Set up guild</a>
+                <a target="_blank" href="https://discord.com/oauth2/authorize?client_id=875545057682419773&scope=bot&permissions=8&guild_id=@Guild.Id">Set up Server</a>
         }
         </div>
     <div class="guild-name">
