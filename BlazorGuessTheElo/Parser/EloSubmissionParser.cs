@@ -16,12 +16,12 @@ namespace BlazorGuessTheElo.Parser
         private readonly static Regex MetadataColorRegex = new Regex(@"\[(white|black)\s+(""|')\w+(""|')\]", RegexOptions.IgnoreCase);
         private readonly static Regex LeadingMoveNumberRegex = new Regex(@"^(\d+\.)");
 
-        private readonly static Regex PieceMove = new Regex(@"^([KQBNR][a-h1-8]?x?[a-h][1-8](\+|#)?)$");
-        private readonly static Regex CastlesMove = new Regex(@"^O-O(-O)?(\+|#)?$");
-        private readonly static Regex PawnMove = new Regex(@"^[a-h][2-7](\+|#)?$");
-        private readonly static Regex PawnTake = new Regex(@"^[a-h]x[a-h][2-7](\+|#)?$");
-        private readonly static Regex PawnPromote = new Regex(@"^[a-h][18]=[QBNR](\+|#)?$");
-        private readonly static Regex PawnTakePromote = new Regex(@"^[a-h]x[a-h][18]=[QBNR](\+|#)?$");
+        private readonly static Regex PieceMove = new Regex(@"^([KQBNR][a-h1-8]?x?[a-h][1-8](\+|#)?)$", RegexOptions.IgnoreCase);
+        private readonly static Regex CastlesMove = new Regex(@"^O-O(-O)?(\+|#)?$", RegexOptions.IgnoreCase);
+        private readonly static Regex PawnMove = new Regex(@"^[a-h][2-7](\+|#)?$", RegexOptions.IgnoreCase);
+        private readonly static Regex PawnTake = new Regex(@"^[a-h]x[a-h][2-7](\+|#)?$", RegexOptions.IgnoreCase);
+        private readonly static Regex PawnPromote = new Regex(@"^[a-h][18]=[QBNR](\+|#)?$", RegexOptions.IgnoreCase);
+        private readonly static Regex PawnTakePromote = new Regex(@"^[a-h]x[a-h][18]=[QBNR](\+|#)?$", RegexOptions.IgnoreCase);
 
 
         public static EloSubmission Parse(string message)
