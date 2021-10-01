@@ -1,4 +1,5 @@
-﻿@using Discord.Rest;
+﻿@implements IDisposable 
+@using Discord.Rest;
 @using Discord.WebSocket;
 @inject DiscordSocketClient DiscordSocketClient;
 <div class="guild-preview">
@@ -12,16 +13,22 @@
                 @String.Join("", Guild.Name.Split().Select(x => x[0]).Take(3))
             }
     </div>
-        <div class="guild-link">
     @if (DiscordSocketClient.Guilds.Select(x => x.Id).Contains(Guild.Id))
     {
-            <a href="Dashboard/@Guild.Id.ToString()">Server Dashboard</a>
+        <a href="Dashboard/@Guild.Id.ToString()">
+            <div class="guild-link">
+                Server Dashboard
+            </div>
+        </a>
     }
     else
         {
-                <a target="_blank" href="https://discord.com/oauth2/authorize?client_id=875545057682419773&scope=bot&permissions=8&guild_id=@Guild.Id">Set up Server</a>
+        <a target="_blank" href="https://discord.com/oauth2/authorize?client_id=875545057682419773&scope=bot&permissions=8&guild_id=@Guild.Id">
+            <div class="guild-link">
+                Set up Server
+            </div>
+        </a>
         }
-        </div>
     <div class="guild-name">
         @Guild.Name
     </div>
@@ -46,5 +53,11 @@
             });
         }
         else return Task.CompletedTask;
+    }
+
+    public void Dispose()
+    {
+        DiscordSocketClient.JoinedGuild -= Refresh;
+        DiscordSocketClient.LeftGuild -= Refresh;
     }
 }

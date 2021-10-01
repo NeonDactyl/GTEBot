@@ -14,11 +14,12 @@
     public string AccessToken { get; set; }
     public ulong? GuildId { get; set; }
     public bool GuildPage { get; set; }
-    private bool Loading;
+    private bool Loading = true;
 
     protected override async Task OnInitializedAsync()
     {
         Loading = true;
+        Console.WriteLine("Loading = true in OnInitializedAsync");
 
         await DiscordManagementService.InitializeAsync();
         var guilds = await DiscordManagementService.RetrieveGuilds();
@@ -38,6 +39,7 @@
             GuildPage = false;
         }
         Loading = false;
+        Console.WriteLine("Loading = false in OnParametersSet");
     }
 
 }

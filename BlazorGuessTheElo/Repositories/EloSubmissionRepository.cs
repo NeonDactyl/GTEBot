@@ -30,6 +30,11 @@ namespace BlazorGuessTheElo.Repositories
             return (channelId == null) ? new List<EloSubmission>() : databaseContext.EloSubmissions.AsQueryable().Where(e => e.IsActive && e.SourceDiscordChannelId == channelId).ToList();
         }
 
+        public List<EloSubmission> GetAllEloSubmissionsByChannelId(ulong? channelId)
+        {
+            return (channelId == null) ? new List<EloSubmission>() : databaseContext.EloSubmissions.AsQueryable().Where(e => e.SourceDiscordChannelId == channelId).ToList();
+        }
+
         public void SetAllActiveToInactiveByChannelId(ulong channelId)
         {
             var active = databaseContext.EloSubmissions.AsQueryable().Where(x => x.IsActive == true && x.SourceDiscordChannelId == channelId);

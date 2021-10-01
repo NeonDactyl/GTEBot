@@ -1,4 +1,5 @@
-﻿@page "/Games/{ChannelIdParam?}"
+﻿@implements IDisposable
+@page "/Games/{ChannelIdParam?}"
 @using Discord.WebSocket;
 @using Microsoft.Extensions.Primitives; 
 @using Microsoft.AspNetCore.WebUtilities; 
@@ -15,21 +16,26 @@
 
 <h3>Games from <NavLink href="@($"Dashboard/{Channel.Guild.Id}")">@Channel.Guild.Name - @Channel.Name</NavLink></h3>
 <div class="add-margin">
+    <MatCheckbox Label="Include Archived Games" TValue="bool" ValueChanged="ToggleArchivedGames" Value="IncludeArchivedGames"></MatCheckbox>
+</div>
+@if (GameSubmissions.Any())
+{
+<div class="add-margin">
     <MatButton class="add-margin" Raised="true" OnClick="@ToggleAllGames">@ToggleButtonDisplay</MatButton>
 </div>
-    
+}
 
 @if (ShowSingleGame == true)
 {
 <div class="add-margin">
-    <MatButton class="add-margin" Raised="true" OnClick="@PickRandomGame">Pick new random game</MatButton>
+    <MatButton class="add-margin" Raised="true" OnClick="@PickRandomGame" Disabled="@(!GameSubmissions.Any())">Pick new random game</MatButton>
 </div>
     <GameView Game="RandomGame"></GameView>
 }
 else
 {
 <div class="add-margin">
-    <MatButton class="add-margin" Raised="true" OnClick="@MarkAllInactive">Mark All Games As Old</MatButton>
+    <MatButton class="add-margin" Raised="true" OnClick="@ArchiveGames">Archive Games</MatButton>
 </div>
     <MatAccordion>
         @foreach(var game in GameSubmissions)
@@ -57,16 +63,31 @@ else
     private SocketGuildChannel Channel;
     private EloSubmission RandomGame;
     private bool ShowSingleGame;
+    private bool IncludeArchivedGames;
     private string ToggleButtonDisplay;
 
     private readonly static string RandomGameButtonText = "Choose a random game";
     private readonly static string SingleGameButtonText = "Show all games";
 
+
     protected override async Task OnInitializedAsync()
     {
         ShowSingleGame = false;
+        IncludeArchivedGames = false;
         ToggleButtonDisplay = RandomGameButtonText;
         DatabaseChangesService.GamesMarkedInactiveAction += GamesMarkedInactive;
+    }
+
+    void ToggleArchivedGames(bool toggled)
+    {
+        IncludeArchivedGames = toggled;
+        if (IncludeArchivedGames) GameSubmissions = EloSubmissionRepository.GetAllEloSubmissionsByChannelId(ChannelId);
+        else GameSubmissions = EloSubmissionRepository.GetActiveEloSubmissionsByChannelId(ChannelId);
+    }
+
+    public void Dispose()
+    {
+        DatabaseChangesService.GamesMarkedInactiveAction -= GamesMarkedInactive;
     }
 
     void ToggleAllGames()
@@ -79,7 +100,7 @@ else
         ToggleButtonDisplay = (ShowSingleGame ? SingleGameButtonText : RandomGameButtonText);
     }
 
-    void MarkAllInactive()
+    void ArchiveGames()
     {
         EloSubmissionRepository.SetAllActiveToInactiveByChannelId(Channel.Id);
     }
