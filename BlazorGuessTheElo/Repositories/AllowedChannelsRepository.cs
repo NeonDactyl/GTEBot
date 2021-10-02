@@ -60,7 +60,7 @@ namespace BlazorGuessTheElo.Repositories
         }
         public ulong? GetDefaultRoleByChannelId(ulong channelId)
         {
-            ulong? role = databaseContext.AllowedChannels.FirstOrDefault(x => x.ChannelId == channelId).DefaultRole;
+            ulong? role = databaseContext.AllowedChannels.FirstOrDefault(x => x.ChannelId == channelId)?.DefaultRole;
             return role;
         }
 
