@@ -1,3 +1,11 @@
 ﻿.add-margin {
     margin: 10px;
 }
+
+h3 {
+    color: #ccc;
+}
+
+h3 a {
+    color: #0366d6;
+}

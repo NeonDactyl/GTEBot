@@ -5,7 +5,7 @@
 <a href="@Game.GameUrl">Game Link</a><br />
 <span>@((int)((Game.Pgn.Split().Count() + 1) / 2)) Moves played</span><br />
 <MatInputTextComponent Disabled="true" Value="@Game.Pgn"></MatInputTextComponent>
-<button onclick="navigator.clipboard.writeText('@Game.Pgn')">Copy to Clipboard</button><br />
+<button class="btn btn-info" type="button" onclick="navigator.clipboard.writeText('@Game.Pgn')">Copy to Clipboard</button><br />
 Subscriber played @Game.Color
 @code {
     [Parameter]

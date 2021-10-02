@@ -4,8 +4,12 @@
     flex-direction: column;
 }
 
+.navbar-image {
+    border-radius: 50%;
+}
 .main {
     flex: 1;
+    background-image: url('levy_background.jpeg');
 }
 
 .sidebar {
