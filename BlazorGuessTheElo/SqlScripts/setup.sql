@@ -14,7 +14,8 @@ CREATE TABLE elosubmissionDatabase.EloSubmissions (
 
 CREATE TABLE elosubmissionDatabase.AllowedChannels (
 	ChannelId BIGINT UNSIGNED PRIMARY KEY,
-	Allowed BIT
+	Allowed BIT,
+	DefaultRole BIGINT UNSIGNED
 	);
 
-INSERT INTO elosubmissionDatabase.AllowedChannels (ChannelId, Allowed) VALUES (881581709756338259, 1)
+INSERT INTO elosubmissionDatabase.AllowedChannels (ChannelId, Allowed) VALUES (881581709756338259, 1, 889685958121914478)

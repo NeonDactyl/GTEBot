@@ -58,5 +58,19 @@ namespace BlazorGuessTheElo.Repositories
             databaseContext.SaveChanges();
             databaseChangesService.RefreshChannelRemoved(channelId);
         }
+        public ulong? GetDefaultRoleByChannelId(ulong channelId)
+        {
+            ulong? role = databaseContext.AllowedChannels.FirstOrDefault(x => x.ChannelId == channelId).DefaultRole;
+            return role;
+        }
+
+        public void SetDefaultRoleByChannelId(ulong channelId, ulong roleId)
+        {
+            var allowedChannel = databaseContext.AllowedChannels.FirstOrDefault(x => x.ChannelId == channelId);
+            allowedChannel.Allowed = true;
+            allowedChannel.DefaultRole = roleId;
+            databaseContext.Update(allowedChannel);
+            databaseContext.SaveChanges();
+        }
     }
 }

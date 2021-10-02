@@ -10,5 +10,7 @@ namespace BlazorGuessTheElo.Repositories.Interfaces
         public List<ulong> GetAllowedChannels();
         public void AddAllowedChannel(ulong channelId);
         public void RemoveAllowedChannel(ulong channelId);
+        public ulong? GetDefaultRoleByChannelId(ulong channelId);
+        public void SetDefaultRoleByChannelId(ulong channelId, ulong roleId);
     }
 }

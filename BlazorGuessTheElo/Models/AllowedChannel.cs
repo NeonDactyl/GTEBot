@@ -16,5 +16,6 @@ namespace BlazorGuessTheElo.Models
         { }
         public ulong ChannelId { get; set; }
         public bool Allowed { get; set; }
+        public ulong? DefaultRole { get; set; }
     }
 }

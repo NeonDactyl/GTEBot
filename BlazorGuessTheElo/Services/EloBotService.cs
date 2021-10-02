@@ -39,11 +39,11 @@ namespace BlazorGuessTheElo.Services
         public async Task StartAsync(CancellationToken cancellationToken)
         {
             socketClient.Log += LogAsync;
+            socketClient.JoinedGuild += GuildJoined;
             await socketClient.LoginAsync(TokenType.Bot, token);
             await socketClient.StartAsync();
             await socketClient.SetStatusAsync(UserStatus.Offline);
             await commandHandlingService.InitializeAsync();
-            socketClient.JoinedGuild += GuildJoined;
         }
 
         public async Task SetSlowMode(int seconds, ulong channelId)

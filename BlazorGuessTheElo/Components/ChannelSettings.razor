@@ -13,7 +13,7 @@
     <MatSlideToggle TValue="bool" Value="IsAllowedChannel" Label="Allow Bot On Channel" ValueChanged="ChannelAllowedToggle"></MatSlideToggle><br />
     @if (IsAllowedChannel)
     {
-        <MatSelect Label="Select a role for the channel" @bind-Value="CurrentRoleId">
+        <MatSelect Label="Select a role for the channel" TValue="ulong" Value="CurrentRoleId" ValueChanged="RoleChanged">
             @foreach (SocketRole role in Roles)
             {
                 <MatOption TValue="ulong" Value="@role.Id">@role.Name</MatOption>
@@ -38,6 +38,8 @@
         this.Roles = Channel.Guild.Roles.ToList();
         this.DatabaseChangesService.ChannelChangedAdded += Refresh;
         this.IsAllowedChannel = AllowedChannelsRepository.GetAllowedChannels().Contains(Channel.Id);
+        var x = AllowedChannelsRepository.GetDefaultRoleByChannelId(Channel.Id);
+        if (x != null) CurrentRoleId = (ulong)x;
         return Task.CompletedTask;
     }
 
@@ -79,7 +81,13 @@
     }
 
     public void Dispose()
-        {
-            this.DatabaseChangesService.ChannelChangedAdded -= Refresh;
-        }
+    {
+        this.DatabaseChangesService.ChannelChangedAdded -= Refresh;
+    }
+
+    private void RoleChanged(ulong roleId)
+    {
+        CurrentRoleId = roleId;
+        AllowedChannelsRepository.SetDefaultRoleByChannelId(Channel.Id, roleId);
+    }
 }
