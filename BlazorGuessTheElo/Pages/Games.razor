@@ -15,8 +15,8 @@
 @inject IDatabaseChangesService DatabaseChangesService 
 
 <h3>Games from <NavLink href="@($"Dashboard/{Channel.Guild.Id}")">@Channel.Guild.Name - @Channel.Name</NavLink></h3>
-<div class="add-margin">
-    <MatCheckbox Label="Include Archived Games" TValue="bool" ValueChanged="ToggleArchivedGames" Value="IncludeArchivedGames"></MatCheckbox>
+<div class="add-margin toggle-all-games">
+    <MatCheckbox Style="color:#ccc;" Label="Include Archived Games" TValue="bool" ValueChanged="ToggleArchivedGames" Value="IncludeArchivedGames"></MatCheckbox>
 </div>
 @if (GameSubmissions.Any())
 {

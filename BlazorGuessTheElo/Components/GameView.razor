@@ -6,7 +6,7 @@
 <span>@((int)((Game.Pgn.Split().Count() + 1) / 2)) Moves played</span><br />
 <MatInputTextComponent Disabled="true" Value="@Game.Pgn"></MatInputTextComponent>
 <button class="btn btn-info" type="button" onclick="navigator.clipboard.writeText('@Game.Pgn')">Copy to Clipboard</button><br />
-Subscriber played @Game.Color
+<span>Subscriber played @Game.Color</span>
 @code {
     [Parameter]
     public EloSubmission Game { get; set; }
