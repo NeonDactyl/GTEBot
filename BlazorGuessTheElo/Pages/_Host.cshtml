@@ -4,8 +4,8 @@
 @namespace BlazorGuessTheElo.Pages 
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
-    InitialApplicationState tokens;
-    Console.WriteLine(DateTime.Now.ToString() + HttpContext.User.Identity.Name + "logged in");
+                InitialApplicationState tokens;
+                Console.WriteLine($"{DateTime.Now.ToString()}  {HttpContext.User.Identity.Name} logged in");
     if (User.Identity.IsAuthenticated)
     {
         tokens = new InitialApplicationState
